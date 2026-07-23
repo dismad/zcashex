@@ -27,6 +27,7 @@ defmodule Zcashex.Transaction do
     embeds_many(:vShieldedSpend, Zcashex.VShieldedSpend)
     embeds_many(:vShieldedOutput, Zcashex.VShieldedOutput)
     embeds_one(:orchard, Zcashex.Orchard)
+    embeds_one(:ironwood, Zcashex.Ironwood)
   end
 
   def changeset(struct, data) do
@@ -56,6 +57,7 @@ defmodule Zcashex.Transaction do
     |> cast_embed(:vShieldedSpend)
     |> cast_embed(:vShieldedOutput)
     |> cast_embed(:orchard)
+    |> cast_embed(:ironwood)
   end
 
   def from_map(data) when is_map(data) do
@@ -85,7 +87,8 @@ defmodule Zcashex.Transaction do
     |> cast_embed(:vShieldedSpend)
     |> cast_embed(:vShieldedOutput)
     |> cast_embed(:orchard)
-    |> apply_changes
+    |> cast_embed(:ironwood)
+    |> apply_changes()
   end
 end
 
@@ -297,6 +300,66 @@ defmodule Zcashex.Orchard do
 end
 
 defmodule Zcashex.OrchardAction do
+  use Ecto.Schema
+  import Ecto.Changeset
+
+  @primary_key false
+  embedded_schema do
+    field(:cv, :string)
+    field(:nullifier, :string)
+    field(:rk, :string)
+    field(:cmx, :string)
+    field(:ephemeralKey, :string)
+    field(:encCiphertext, :string)
+    field(:outCiphertext, :string)
+    field(:spendAuthSig, :string)
+  end
+
+  def changeset(struct, data) do
+    struct
+    |> cast(data, [
+      :cv,
+      :nullifier,
+      :rk,
+      :cmx,
+      :ephemeralKey,
+      :encCiphertext,
+      :outCiphertext,
+      :spendAuthSig
+    ])
+  end
+end
+
+defmodule Zcashex.Ironwood do
+  use Ecto.Schema
+  import Ecto.Changeset
+
+  @primary_key false
+  embedded_schema do
+    field(:valueBalance, :float)
+    field(:valueBalanceZat, :integer)
+    field(:proof, :string)
+    field(:anchor, :string)
+    field(:bindingSig, :string)
+    field(:flags, :map)
+    embeds_many(:actions, Zcashex.IronwoodAction)
+  end
+
+  def changeset(struct, data) do
+    struct
+    |> cast(data, [
+      :valueBalance,
+      :valueBalanceZat,
+      :proof,
+      :anchor,
+      :bindingSig,
+      :flags
+    ])
+    |> cast_embed(:actions)
+  end
+end
+
+defmodule Zcashex.IronwoodAction do
   use Ecto.Schema
   import Ecto.Changeset
 
