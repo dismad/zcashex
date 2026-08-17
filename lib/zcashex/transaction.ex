@@ -21,6 +21,12 @@ defmodule Zcashex.Transaction do
     field(:version, :integer)
     field(:versiongroupid, :string)
     field(:bindingSig, :string)
+
+    # ZSA / V6 fields (from zcash-shielded-assets Zebra)
+    field(:issuanceexists, :boolean)
+    field(:burnexists, :boolean)
+    field(:zip233amount, :integer)
+
     embeds_many(:vin, Zcashex.VInTX)
     embeds_many(:vout, Zcashex.VOutTX)
     embeds_many(:vjoinsplit, Zcashex.VJoinSplitTX)
@@ -49,7 +55,10 @@ defmodule Zcashex.Transaction do
       :valueBalance,
       :valueBalanceZat,
       :version,
-      :versiongroupid
+      :versiongroupid,
+      :issuanceexists,
+      :burnexists,
+      :zip233amount
     ])
     |> cast_embed(:vin)
     |> cast_embed(:vout)
@@ -79,7 +88,10 @@ defmodule Zcashex.Transaction do
       :txid,
       :valueBalance,
       :valueBalanceZat,
-      :version
+      :version,
+      :issuanceexists,
+      :burnexists,
+      :zip233amount
     ])
     |> cast_embed(:vin)
     |> cast_embed(:vout)
@@ -283,6 +295,8 @@ defmodule Zcashex.Orchard do
     field(:proof, :string)
     field(:anchor, :string)
     field(:bindingSig, :string)
+    # ZSA: holds enableSpends / enableOutputs / enableZSA
+    field(:flags, :map)
     embeds_many(:actions, Zcashex.OrchardAction)
   end
 
@@ -293,7 +307,8 @@ defmodule Zcashex.Orchard do
       :valueBalanceZat,
       :proof,
       :anchor,
-      :bindingSig
+      :bindingSig,
+      :flags
     ])
     |> cast_embed(:actions)
   end
