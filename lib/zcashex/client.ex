@@ -29,8 +29,19 @@ defmodule Zcashex.Client do
 
     case response do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        {:ok, %{"error" => nil, "id" => "zcashex", "result" => result}} = Poison.decode(body)
-        {:reply, {:ok, result}, state}
+        case Poison.decode(body) do
+          {:ok, %{"error" => nil, "result" => result}} ->
+            {:reply, {:ok, result}, state}
+
+          {:ok, %{"error" => %{"message" => message}}} ->
+            {:reply, {:error, message}, state}
+
+          {:ok, %{"error" => error}} when not is_nil(error) ->
+            {:reply, {:error, error}, state}
+
+          _ ->
+            {:reply, {:error, "Unknown error."}, state}
+        end
 
       {:ok, %HTTPoison.Response{body: body}} ->
         case Poison.decode(body) do
