@@ -63,18 +63,18 @@ defmodule Zcashex.Crosslink.StakingAction do
   end
 
   defp decode_variant(
-         5,
-         <<bond_salt::binary-size(32), this_finalizer::binary-size(32),
-           finalizer_sig::binary-size(64), amount::little-unsigned-64, left::binary>>
-       ) do
-    {:ok,
-     %{
-       bond_salt: bond_salt,
-       this_finalizer: this_finalizer,
-       finalizer_signature: finalizer_sig,
-       amount_zats: amount
-     }, left}
-  end
+       5,
+       <<bond_salt::binary-size(32), this_finalizer::binary-size(32),
+         amount::little-unsigned-64, finalizer_sig::binary-size(64), left::binary>>
+     ) do
+  {:ok,
+   %{
+     bond_salt: bond_salt,
+     this_finalizer: this_finalizer,
+     amount_zats: amount,
+     finalizer_signature: finalizer_sig
+   }, left}
+end
 
   defp decode_variant(tag, rest), do: {:error, {:bad_variant, tag, rest}}
 end
