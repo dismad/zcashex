@@ -49,12 +49,12 @@ defmodule Zcashex do
   end)
 
   def getblock(hash, verbosity)
-      when is_binary(hash) and is_integer(verbosity) and verbosity in 0..2 do
+      when is_binary(hash) and is_integer(verbosity) and verbosity in 0..3 do
     GenServer.call(__MODULE__, {:call_endpoint, "getblock", [hash, verbosity]}, 120_000)
   end
 
   def getblock(hash, verbosity)
-      when is_integer(hash) and is_integer(verbosity) and verbosity in 0..2 do
+      when is_integer(hash) and is_integer(verbosity) and verbosity in 0..3 do
     GenServer.call(
       __MODULE__,
       {:call_endpoint, "getblock", [Integer.to_string(hash), verbosity]},
